@@ -1,0 +1,9 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: switchlab
+      POSTGRES_USER: switchlab
+      POSTGRES_PASSWORD: switchlab
+    ports:
+      - "5432:5432"
