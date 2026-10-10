@@ -1,0 +1,46 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: switchlab
+      POSTGRES_USER: switchlab
+      POSTGRES_PASSWORD: ${SWITCHLAB_DB_PASSWORD:?set SWITCHLAB_DB_PASSWORD in .env}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U switchlab -d switchlab"]
+      interval: 5s
+      retries: 10
+
+  app:
+    image: ${SWITCHLAB_IMAGE:-ghcr.io/henryudorji/switchlab:latest}
+    build: .
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SWITCHLAB_DB_URL: jdbc:postgresql://postgres:5432/switchlab
+      SWITCHLAB_DB_USER: switchlab
+      SWITCHLAB_DB_PASSWORD: ${SWITCHLAB_DB_PASSWORD}
+    ports:
+      - "5000:5000"
+      - "5001:5001"
+
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    depends_on: [app]
+    environment:
+      SWITCHLAB_DOMAIN: ${SWITCHLAB_DOMAIN:-localhost}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+
+volumes:
+  pgdata:
+  caddy_data:

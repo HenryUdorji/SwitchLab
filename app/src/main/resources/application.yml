@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: switchlab
+  datasource:
+    url: ${SWITCHLAB_DB_URL:jdbc:postgresql://localhost:5432/switchlab}
+    username: ${SWITCHLAB_DB_USER:switchlab}
+    password: ${SWITCHLAB_DB_PASSWORD:switchlab}
+  flyway:
+    placeholders:
+      generic87Port: ${SWITCHLAB_GENERIC87_PORT:5000}
+      nibssPort: ${SWITCHLAB_NIBSS_PORT:5001}
+
+switchlab:
+  switch:
+    deploy-dir: ${SWITCHLAB_Q2_DEPLOY_DIR:${java.io.tmpdir}/switchlab-q2/deploy}
+    startup-timeout: 30s
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health

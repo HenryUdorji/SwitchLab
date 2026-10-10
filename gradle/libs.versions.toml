@@ -1,0 +1,14 @@
+[versions]
+spring-boot = "4.1.1"
+jpos = "3.0.2"
+picocli = "4.7.7"
+spotless = "8.10.4"
+
+[libraries]
+spring-boot-bom = { module = "org.springframework.boot:spring-boot-dependencies", version.ref = "spring-boot" }
+jpos = { module = "org.jpos:jpos", version.ref = "jpos" }
+picocli = { module = "info.picocli:picocli", version.ref = "picocli" }
+
+[plugins]
+spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }
+spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
