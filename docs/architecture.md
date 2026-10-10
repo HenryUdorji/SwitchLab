@@ -9,7 +9,7 @@ Status: **approved 2026-10-10**.
 | 1 | jPOS licensing | **jPOS under AGPL-3.0 now; buy a commercial licence before paid launch (M8)** | The SwitchLab repo is public under AGPL-3.0 from first deploy. The dashboard footer links to the source, which covers the AGPL network-use clause. If we want closed source later, the commercial licence must land first. |
 | 2 | Tenancy | **Shared listener per dialect, routed by TID (field 41)** | A dedicated port per tenant is a later paid option. See section 4. |
 | 3 | Dialects | **Generic ISO 8583:1987 plus a NIBSS POS profile** | The NIBSS profile follows the NIBSS POS ↔ CTMS spec you shared (kept in project files only, never committed). See section 7. |
-| 4 | Hosting | **Oracle Cloud Always Free ARM VM running Docker Compose** (chosen 2026-10-10) | Render can't be used. Its public services accept HTTP, HTTPS and WebSocket only, so a POS can't open a raw TCP socket to it. Its free tier also sleeps after 15 minutes idle, and its free Postgres is deleted after 30 days. |
+| 4 | Hosting | **Hetzner Cloud VM running Docker Compose** (changed from the Oracle free tier on 2026-10-10) | Render can't be used. Its public services accept HTTP, HTTPS and WebSocket only, so a POS can't open a raw TCP socket to it. Its free tier also sleeps after 15 minutes idle, and its free Postgres is deleted after 30 days. |
 | 5 | Stack | **Spring Boot 4 on Java 25 (jPOS 3 requires Java 24+, and 25 is the current LTS) with jPOS Q2 embedded in the same JVM; React + TypeScript dashboard; SSE live feed; bundled Java CLI POS client** | One deployable keeps v1 simple. The module boundaries allow the switch and API to split later. |
 | 6 | Brand | "SwitchLab" as working name | This decision doesn't block anything. |
 
@@ -218,13 +218,13 @@ Built-in dialects are defined in code (`io.switchlab.iso.Dialect`) with their pa
 
 ## 9. Deployment
 
-**Oracle Cloud Always Free** layout:
-- An Ampere A1 VM (the free allowance is up to 4 OCPU and 24 GB RAM), Ubuntu 24.04, Docker Compose. Region: Johannesburg (`af-johannesburg-1`) if it has free ARM capacity at sign-up, otherwise the nearest region that does. The home region is fixed at sign-up.
+**Hetzner Cloud** layout:
+- One shared-vCPU VM, the smallest ARM `CAX` or x86 `CX` plan with 2 vCPU and 4 GB (a few euros a month), running Ubuntu 24.04 and Docker Compose. Hetzner has no African region, so pick Falkenstein, Nuremberg or Helsinki. Round trips to Lagos are roughly 100 to 150 ms, which is fine for a test host. Resize in place when beta load needs it.
 - `docker-compose.yml` services: `app` (multi-arch image, `eclipse-temurin:25-jre`), `postgres:16`, `caddy:2`.
-- Ports: `443` (dashboard and API via Caddy), `5000`, `5001` (ISO TCP), and later `5400`, `5401` (ISO over TLS). Open them in the OCI security list as well as the host firewall.
-- Backups: nightly `pg_dump` to OCI Object Storage (part of the free allowance) with 7 dailies kept.
+- Ports: `22` (your IP only), `80`/`443` (dashboard and API via Caddy), `5000`, `5001` (ISO TCP), and later `5400`, `5401` (ISO over TLS). These are allowed in a Hetzner Cloud Firewall attached to the server.
+- Backups: Hetzner's server backups (+20% of the server price, 7 daily snapshots) plus a nightly `pg_dump` to a Storage Box or Object Storage.
 - Deploys: GitHub Actions builds the image and pushes it to GHCR, then SSHes in and runs `docker compose pull && up -d`.
-- Risk: free ARM capacity is sometimes unavailable at sign-up, and Oracle can reclaim idle Always Free instances. Mitigation: the same compose file runs unchanged on a $5 Hetzner or DigitalOcean VPS.
+- Portability: nothing is Hetzner-specific, so the same compose file runs on any Ubuntu VPS if a Lagos-hosted provider becomes worth it later.
 
 ## 10. Observability
 

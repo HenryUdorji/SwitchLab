@@ -13,7 +13,7 @@ SwitchLab/
 ├── docker-compose.dev.yml          # postgres only, for running the app from the IDE
 ├── deploy/
 │   ├── Caddyfile
-│   ├── oracle-vm.md                # provisioning steps, security list ports 443/5000/5001
+│   ├── hetzner.md                  # provisioning steps, firewall ports 443/5000/5001
 │   └── backup.sh                   # nightly pg_dump -> object storage
 ├── .github/workflows/
 │   ├── ci.yml                      # build, unit, integration (Testcontainers), dashboard tests

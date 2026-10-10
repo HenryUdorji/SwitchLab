@@ -21,7 +21,7 @@ Demo: `docker compose up` locally, then `switchlab-client echo` gets an 0810 fro
 | M0-6 | `nibss` dialect (first pass): packager XML, 2-byte length channel, secondary bitmap | 2d | Round-trip on fixtures built from the spec's 0200/0420/0800 layouts. Real captures are added when you send them |
 | M0-7 | Listeners from DB config, plus a minimal TM with a `netmgmt` group answering echo (generic F70=301, NIBSS 9D0000) | 1d | Echo works on :5000 and :5001 |
 | M0-8 | `switchlab-client` CLI v0: `echo` command, both dialects | 1d (shared with M0-7) | CLI prints the parsed 0810 |
-| M0-9 | `docker-compose.yml` (app, postgres, caddy), Oracle VM provisioning notes, first deploy | 1d | Echo works against the public IP |
+| M0-9 | `docker-compose.yml` (app, postgres, caddy), Hetzner VM provisioning notes, first deploy | 1d | Echo works against the public IP |
 
 ## M1: Financial flow (≈ 8d)
 Demo: a 0200 purchase from the CLI is approved, and the transaction row is in the DB.
